@@ -1,0 +1,39 @@
+name: Node.js CI - Develop
+
+on:
+  push:
+    branches: ["develop"]
+  pull_request:
+    branches: ["develop"]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ 코드 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Node.js 설치
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # 3️⃣ 의존성 설치
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ 타입 체크 (TypeScript)
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      # 5️⃣ 린트 검사 (ESLint)
+      - name: Lint code
+        run: npx eslint "./src/**/*.{ts,tsx,js,jsx}"
+
+      # 6️⃣ 빌드 테스트
+      - name: Build project
+        run: npm run build --if-present
